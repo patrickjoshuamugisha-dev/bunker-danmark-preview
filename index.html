@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bunker Danmark · Din egen bunker, under din have</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   BUNKER DANMARK — v3
+   hero (grounded framing, left scrim) → HARD CUT →
+   scroll-scrub reveal (bunker opens, copy overlay after doors) →
+   how it works → om os + faq (side by side) → final CTA
+   scene is the theme · blue accent · Hanken Grotesk · calm motion
+   ============================================================ */
+:root{
+  --blue:#2F6BFF; --blue-deep:#1E4FD6;
+  --ink:#141E29; --ink-soft:#485866;
+  --paper:#F6FAFD; --paper-soft:#A9BAC8;
+  --depth:#0B1420; --depth-2:#080F18;
+  --soil:#4A3A2E;
+  --maxw:1200px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--ink);background:var(--depth-2);
+  overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--blue);color:#fff}
+h1,h2,h3{line-height:1.06;letter-spacing:-.02em;font-weight:800}
+h1{font-size:clamp(2.4rem,4.8vw,4rem)}
+h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.lead{font-size:clamp(1rem,1.3vw,1.16rem);line-height:1.6}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(1.2rem,4vw,2.6rem)}
+
+/* address form */
+.addr{display:flex;gap:.55rem;flex-wrap:wrap;align-items:stretch}
+.addr input{flex:1 1 240px;min-width:0;font:inherit;font-size:1rem;padding:.95rem 1.1rem;border-radius:9px;
+  border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.96);color:var(--ink)}
+.addr input::placeholder{color:#7d8b98}
+.addr input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,107,255,.25)}
+.addr button{font:inherit;font-size:1rem;font-weight:700;background:var(--blue);color:#fff;border:0;border-radius:9px;
+  padding:.95rem 1.7rem;cursor:pointer;transition:background .2s,transform .2s;white-space:nowrap}
+.addr button:hover{background:var(--blue-deep);transform:translateY(-1px)}
+.btn{display:inline-block;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;
+  padding:.9rem 1.7rem;border-radius:9px;transition:background .2s,transform .2s}
+.btn:hover{background:var(--blue-deep);transform:translateY(-1px)}
+.rv{opacity:0;transform:translateY(24px)}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
+
+/* ---------- NAV: logo left · menu centered · CTA top-right ---------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:60;display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;padding:1.1rem clamp(1.2rem,4vw,2.6rem);transition:background .35s,box-shadow .35s}
+.nav__logo{font-weight:800;letter-spacing:.1em;font-size:1rem;color:#fff;text-decoration:none;white-space:nowrap;
+  text-shadow:0 1px 10px rgba(0,0,0,.5)}
+.nav__logo span{color:#9cc0ff}
+.nav__menu{display:flex;gap:2rem;justify-self:center;list-style:none}
+.nav__menu a{color:rgba(255,255,255,.94);text-decoration:none;font-size:1.02rem;font-weight:600;transition:color .2s;
+  text-shadow:0 1px 10px rgba(0,0,0,.55)}
+.nav__menu a:hover{color:#fff}
+.nav__cta{justify-self:end;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;font-size:1rem;
+  padding:.8rem 1.6rem;border-radius:8px;white-space:nowrap;transition:background .2s,transform .2s;
+  box-shadow:0 2px 14px rgba(0,0,0,.3)}
+.nav__cta:hover{background:var(--blue-deep);transform:translateY(-1px)}
+.nav--solid{background:rgba(8,15,24,.85);backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(255,255,255,.07)}
+
+/* ============================================================ HERO (grounded framing, left scrim) */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;
+  padding-left:clamp(1.5rem,8vw,9rem);padding-right:1.5rem}
+/* whole house visible with a little sky above for the nav; verified framing */
+.hero__bg{position:absolute;inset:0;background:url('assets/hero.png') center 50%/cover no-repeat}
+/* left scrim protects the copy + bottom dark gradient = backdrop shadow for a clean transition into the dark bunker */
+.hero__scrim{position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(14,21,32,.55) 0%,rgba(14,21,32,.30) 26%,rgba(14,21,32,0) 52%),
+             linear-gradient(0deg,rgba(8,12,18,.95) 0%,rgba(8,12,18,.6) 13%,rgba(8,12,18,0) 34%)}
+.hero__copy{position:relative;z-index:3;width:min(540px,90%)}
+.hero__copy h1{color:#fff;text-shadow:0 2px 30px rgba(0,0,0,.35);font-size:clamp(2.2rem,4vw,3.5rem)}
+.hero__copy .lead{color:rgba(255,255,255,.94);max-width:40ch;margin:1.3rem 0 2rem;
+  text-shadow:0 1px 16px rgba(0,0,0,.4)}
+.hero__form{max-width:500px}
+.hero__fine{margin-top:.8rem;font-size:.8rem;color:rgba(255,255,255,.82)}
+/* scroll cue: subtle, slow — only a hint of the descent, never pushy */
+.hero__scrollcue{position:absolute;bottom:1.8rem;left:50%;z-index:3;
+  display:flex;flex-direction:column;align-items:center;gap:.55rem;
+  color:rgba(255,255,255,.82);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;
+  text-shadow:0 1px 10px rgba(0,0,0,.5);animation:cueBob 2.8s ease-in-out infinite}
+.hero__chev{width:.7rem;height:.7rem;border-right:2px solid rgba(255,255,255,.82);
+  border-bottom:2px solid rgba(255,255,255,.82);transform:rotate(45deg)}
+@keyframes cueBob{0%,100%{transform:translateX(-50%) translateY(0);opacity:.5}
+  50%{transform:translateX(-50%) translateY(7px);opacity:1}}
+.hero__scrollcue{transform:translateX(-50%)}
+@media(prefers-reduced-motion:reduce){.hero__scrollcue{animation:none;opacity:.85}}
+
+/* ============================================================ REVEAL (scroll-scrub) */
+.reveal{position:relative;height:340vh;background:var(--depth)}
+.reveal__sticky{position:sticky;top:0;height:100vh;overflow:hidden}
+#revcanvas{width:100%;height:100%;display:block}
+/* bunker copy overlay — fades in only AFTER the doors are fully open (text-free interior first) */
+.reveal__overlay{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;
+  justify-content:flex-end;align-items:center;text-align:center;padding:0 1.5rem 14vh;pointer-events:none;
+  opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+.reveal__overlay.on{opacity:1;transform:none}
+.reveal__overlay .eyebrow{color:#bcd4ff;margin-bottom:1rem;text-shadow:0 1px 18px rgba(0,0,0,.75)}
+.reveal__overlay h2{color:#fff;text-shadow:0 2px 40px rgba(0,0,0,.8);margin-bottom:1.1rem}
+.reveal__overlay .reveal__sub{color:rgba(255,255,255,.94);font-size:clamp(1rem,1.4vw,1.2rem);line-height:1.7;
+  text-shadow:0 1px 20px rgba(0,0,0,.8);margin-bottom:1.9rem}
+.reveal__overlay .btn{pointer-events:auto;box-shadow:0 6px 30px rgba(0,0,0,.45)}
+.reveal__load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--depth);
+  color:var(--paper-soft);font-size:.82rem;letter-spacing:.15em;z-index:5;transition:opacity .4s}
+
+/* ============================================================ HOW IT WORKS (centered header, 3 steps) */
+.how{background:var(--depth);color:var(--paper);padding:6rem 0 6.5rem}
+.how__head{text-align:center;max-width:44ch;margin:0 auto 3rem}
+.how__head .eyebrow{color:#8FB4E8;margin-bottom:.9rem}
+.how__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4rem}
+.how__step{padding-top:1.1rem;border-top:2px solid rgba(47,107,255,.5)}
+.how__step h3{font-size:1.12rem;font-weight:700;margin-bottom:.5rem}
+.how__step p{font-size:.94rem;line-height:1.55;color:var(--paper-soft)}
+
+/* ============================================================ OM OS + FAQ (side by side) */
+.duo{background:var(--depth-2);color:var(--paper);padding:5.5rem 0}
+.duo__grid{display:grid;grid-template-columns:0.9fr 1.1fr;gap:clamp(3rem,8vw,7.5rem);align-items:start}
+.about .eyebrow{color:#8FB4E8;margin-bottom:.9rem}
+.about h2{margin:0 0 1.2rem}
+.about p{color:var(--paper-soft);line-height:1.6;font-size:clamp(1rem,1.3vw,1.16rem);max-width:42ch}
+.about p + p{margin-top:1rem}
+.faq h2{margin:0 0 1.4rem;font-size:clamp(1.5rem,2.4vw,2rem)}
+.faq details{border-top:1px solid rgba(246,250,253,.1);padding:1.15rem 0}
+.faq details:last-of-type{border-bottom:1px solid rgba(246,250,253,.1)}
+.faq summary{cursor:pointer;font-weight:700;font-size:1.02rem;list-style:none;display:flex;
+  justify-content:space-between;gap:1rem;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+/* down-chevron (no top line); rotates 180° to point up on open */
+.faq summary::after{content:"";flex:0 0 auto;width:.62rem;height:.62rem;margin-top:-.18rem;
+  border-right:2px solid #8FB4E8;border-bottom:2px solid #8FB4E8;transform:rotate(45deg);
+  transition:transform .3s ease}
+.faq details[open] summary::after{transform:rotate(225deg)}
+.faq p{margin-top:.85rem;font-size:.94rem;line-height:1.6;color:var(--paper-soft);max-width:60ch}
+
+/* ============================================================ FINAL CTA */
+.final{background:var(--depth-2);color:var(--paper);padding:1.5rem 0 7rem;position:relative;overflow:hidden}
+.final::before{content:"";position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
+  width:min(780px,90vw);height:440px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(242,227,200,.13),transparent 72%)}
+.final__card{position:relative;z-index:2;max-width:680px;margin:0 auto;text-align:center;
+  background:rgba(20,30,42,.55);border:1px solid rgba(242,227,200,.16);border-radius:16px;
+  padding:3.2rem clamp(1.3rem,4vw,3.2rem);backdrop-filter:blur(6px)}
+.final__card .eyebrow{color:#e5cfa6;margin-bottom:.7rem}
+.final__card h2{margin:0 0 .8rem}
+.final__card .lead{color:var(--paper-soft)}
+.final__card .addr{margin-top:1.9rem;justify-content:center}
+.final__card .fine{margin-top:.75rem;font-size:.8rem;color:#7C8B98}
+footer{background:var(--depth-2);color:#5E6E7C;padding:2rem 0 2.6rem;font-size:.82rem;
+  border-top:1px solid rgba(246,250,253,.07)}
+footer .wrap{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:2rem;transform:translate(-50%,20px);background:var(--ink);color:#fff;
+  font-size:.88rem;padding:.8rem 1.3rem;border-radius:9px;opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;z-index:99;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:820px){
+  .nav{grid-template-columns:1fr auto}.nav__menu{display:none}
+  .how__grid{grid-template-columns:1fr;gap:1.6rem;max-width:460px;margin:0 auto}
+  .duo__grid{grid-template-columns:1fr;gap:2.8rem}
+  .about p{max-width:none}
+  .reveal{height:300vh}
+}
+</style>
+<noscript><style>.rv{opacity:1;transform:none}</style></noscript>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a class="nav__logo" href="#top">BUNKER<span> DANMARK</span></a>
+  <ul class="nav__menu">
+    <li><a href="#top">Hjem</a></li>
+    <li><a href="#reveal">Bunkeren</a></li>
+    <li><a href="#virker">Sådan virker det</a></li>
+    <li><a href="#om">Om os</a></li>
+  </ul>
+  <a class="nav__cta" href="#tjek">Tjek din grund</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero__bg"></div>
+  <div class="hero__scrim"></div>
+  <div class="hero__copy">
+    <h1 class="rv">Din egen bunker,<br>under din have</h1>
+    <p class="lead rv">Se gratis, om din grund kan få en bunker.</p>
+    <form class="addr hero__form rv" data-form>
+      <input type="text" autocomplete="street-address" placeholder="Indtast din adresse" aria-label="Din adresse">
+      <button type="submit">Tjek din grund</button>
+    </form>
+    <p class="hero__fine rv">Din vurdering vises med det samme.</p>
+  </div>
+  <div class="hero__scrollcue">
+    <span class="hero__cuelabel">Under overfladen</span>
+    <span class="hero__chev"></span>
+  </div>
+</header>
+
+<!-- REVEAL (hard cut from hero — bunker sits in the ground and opens as you scroll; copy overlay after doors open) -->
+<section class="reveal" id="reveal">
+  <div class="reveal__sticky">
+    <canvas id="revcanvas"></canvas>
+    <div class="reveal__load" id="revload">indlæser…</div>
+    <div class="reveal__overlay" id="revoverlay">
+      <p class="eyebrow">Bunkeren</p>
+      <h2>Bygget i en container<br>Ro for hele familien</h2>
+      <p class="reveal__sub">En sikker bunker, sænket ned på din grund.<br>Fra 125.000 kr.</p>
+      <a class="btn" href="#top">Tjek din grund</a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="virker">
+  <div class="wrap">
+    <div class="how__head">
+      <p class="eyebrow rv">Sådan virker det</p>
+      <h2 class="rv">Sådan kommer din bunker i jorden</h2>
+    </div>
+    <div class="how__grid">
+      <div class="how__step rv"><h3>Tjek din adresse</h3>
+        <p>Du taster din adresse, og du ser med det samme, om din grund egner sig til en bunker.</p></div>
+      <div class="how__step rv"><h3>Få din vurdering</h3>
+        <p>Vi vender tilbage med mulighederne for netop din grund og en pris, du kan regne med.</p></div>
+      <div class="how__step rv"><h3>Sat i jorden</h3>
+        <p>Bunkeren leveres, graves ned og monteres på din grund.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- OM OS + FAQ (side by side) -->
+<section class="duo" id="om">
+  <div class="wrap duo__grid">
+    <div class="about">
+      <p class="eyebrow rv">Om os</p>
+      <h2 class="rv">Danmarks første private bunker</h2>
+      <p class="rv">Bunker Danmark er de første til at levere bunkere og sikkerhedsrum til private borgere.</p>
+      <p class="rv">Vores mission er at skabe ro til ét hjem ad gangen. Et hjem, hvor familien ved, at de har et trygt sted, uanset hvad der sker.</p>
+    </div>
+    <div class="faq">
+      <h2 class="rv">Ofte stillede spørgsmål</h2>
+      <details class="rv"><summary>Kan min grund få en bunker?</summary>
+        <p>Det finder du ud af med det samme. Du taster din adresse, og du ser, om din grund egner sig til en bunker. Er der noget, der kræver en nærmere vurdering, vender vi tilbage til dig.</p></details>
+      <details class="rv"><summary>Hvad koster en bunker?</summary>
+        <p>Prisen afhænger af størrelse og forhold, ligesom når man bygger et hus. Vi laver både 20- og 40-fods bunkere, og priserne starter fra 125.000 kr.</p></details>
+      <details class="rv"><summary>Skal jeg selv søge tilladelser?</summary>
+        <p>Tilladelser er forskellige fra grund til grund. Vi undersøger, hvad der kræves hos netop dig, og tager os af ansøgninger og papirarbejde, så du slipper for det.</p></details>
+      <details class="rv"><summary>Hvor lang tid tager det?</summary>
+        <p>Tidslinjen afhænger af grunden og de nødvendige tilladelser. Når din grund er vurderet, får du en konkret tidsplan for levering og nedgravning.</p></details>
+      <details class="rv"><summary>Hvad kan bunkeren bruges til?</summary>
+        <p>En bunker er et sikkert sted på din egen grund. For nogle er den et tilflugtssted, hvis der sker noget, for andre et ekstra rum, der giver ro i hverdagen.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final" id="tjek">
+  <div class="wrap">
+    <div class="final__card rv">
+      <p class="eyebrow">Kom i gang</p>
+      <h2>Se om din grund kan få en bunker</h2>
+      <p class="lead">Tjek din adresse, og se hvad der kan lade sig gøre på din grund.</p>
+      <form class="addr" data-form>
+        <input type="text" autocomplete="street-address" placeholder="Indtast din adresse" aria-label="Din adresse">
+        <button type="submit">Tjek din grund</button>
+      </form>
+      <p class="fine">Vurderingen er gratis og vises med det samme.</p>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">
+  <p><strong style="color:#8FA2B2">BUNKER DANMARK</strong> · Private bunkere og sikkerhedsrum</p>
+  <p>[Pladsholder: CVR · kontakt · adresse]</p>
+</div></footer>
+
+<div class="toast" id="toast">Demoen er ikke koblet til endnu — adressetjekket bygges i den rigtige version.</div>
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+gsap.registerPlugin(ScrollTrigger);
+
+/* nav solidifies after hero (stays solid over the bunker + all lower sections) */
+new IntersectionObserver(([e])=>{
+  document.getElementById('nav').classList.toggle('nav--solid', e.intersectionRatio < 0.15);
+},{threshold:[0,.15,.6]}).observe(document.querySelector('.hero'));
+
+/* calm reveals */
+if(!reduce){
+  document.querySelectorAll('.rv').forEach(el=>gsap.to(el,{opacity:1,y:0,duration:.9,ease:'power2.out',
+    scrollTrigger:{trigger:el,start:'top 88%'}}));
+}else document.querySelectorAll('.rv').forEach(el=>{el.style.opacity=1;el.style.transform='none';});
+
+/* ---- scroll-scrub reveal (canvas frame sequence — full frame, copy only after the doors open) ---- */
+const FRAMES=121, pad=n=>String(n).padStart(3,'0');
+const canvas=document.getElementById('revcanvas'), ctx=canvas.getContext('2d');
+const overlay=document.getElementById('revoverlay'), load=document.getElementById('revload');
+const imgs=[]; let loaded=0, cur=-1;
+function fit(){const dpr=Math.min(devicePixelRatio||1,2);
+  const w=canvas.clientWidth,h=canvas.clientHeight;
+  if(!w||!h){requestAnimationFrame(fit);return;}          // layout not ready yet — retry next frame
+  canvas.width=w*dpr;canvas.height=h*dpr;draw(Math.max(cur,0),true);}
+function draw(i,force){const img=imgs[i];if(!img||!img.complete)return;if(i===cur&&!force)return;cur=i;
+  const cw=canvas.width,ch=canvas.height;
+  const ir=img.width/img.height,cr=cw/ch;let w,h,x,y;      // full-frame cover-fit, no crop
+  if(ir>cr){h=ch;w=ch*ir;x=(cw-w)/2;y=0;}else{w=cw;h=cw/ir;x=0;y=(ch-h)/2;}
+  ctx.clearRect(0,0,cw,ch);ctx.drawImage(img,x,y,w,h);}
+for(let i=0;i<FRAMES;i++){const im=new Image();
+  im.onload=()=>{loaded++;if(i===0)fit();if(loaded===FRAMES){load.style.opacity=0;setTimeout(()=>load.remove(),400);}};
+  im.src=`frames/f${pad(i)}.jpg`;imgs.push(im);}
+addEventListener('resize',fit);
+addEventListener('load',fit);                              // re-fit once full layout is in
+ScrollTrigger.create({trigger:'#reveal',start:'top top',end:'bottom bottom',scrub:true,
+  onUpdate:self=>{draw(Math.min(FRAMES-1,Math.round(self.progress*(FRAMES-1))));
+    overlay.classList.toggle('on',self.progress>0.78);}});
+
+/* demo forms → toast */
+const toast=document.getElementById('toast');let t;
+document.querySelectorAll('[data-form]').forEach(f=>f.addEventListener('submit',e=>{
+  e.preventDefault();toast.classList.add('on');clearTimeout(t);t=setTimeout(()=>toast.classList.remove('on'),3200);}));
+</script>
+<script>
+/* failsafe: if the animation script died (blocked asset, old browser), never leave content hidden */
+addEventListener('load',function(){setTimeout(function(){
+  document.querySelectorAll('.rv').forEach(function(el){
+    if(parseFloat(getComputedStyle(el).opacity)<0.05){el.style.opacity=1;el.style.transform='none';}});
+},600);});
+</script>
+</body>
+</html>
