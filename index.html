@@ -181,27 +181,39 @@ h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
   padding:3.2rem clamp(1.5rem,4vw,3.4rem);backdrop-filter:blur(6px)}
 
 /* ---- travelling sheen -------------------------------------------------
-   A single long arc of cool white light walks the outline once every 12s.
-   Roughly a third of the perimeter is lit at any moment, peaked in the middle
-   and feathered out both ways, so it reads as light moving across metal rather
-   than a bright dot doing laps. Two layers: a 1px ring for the highlight itself,
-   and a blurred copy just outside it for the bloom. */
+   A long arc of light walks the outline once every 12s, lighting roughly a third
+   of the perimeter at a time.
+
+   What makes it read as METAL rather than a glowing tube: the peak is a hard,
+   narrow specular core (near-white, a few degrees wide) with a steep ramp into
+   it, not an even soft swell. Real highlights also split slightly in colour
+   across the hit, so the leading edge runs cool blue-silver and the trailing
+   edge falls off warm — that split is doing most of the metallic work. A small
+   second glint trails well behind the main one, the way brushed metal catches
+   light twice. The outer bloom is deliberately tight; a wide halo is what turns
+   metal back into neon. */
 .final__card::after,.final__card::before{content:"";position:absolute;pointer-events:none;
   background:conic-gradient(from var(--lap),
     transparent 0deg,
-    rgba(200,212,228,.10) 26deg,
-    rgba(226,236,248,.52) 52deg,
-    rgba(255,255,255,.92) 63deg,
-    rgba(226,236,248,.52) 74deg,
-    rgba(200,212,228,.10) 100deg,
-    transparent 126deg,
+    rgba(188,204,226,.05) 24deg,
+    rgba(205,222,244,.26) 48deg,
+    rgba(238,246,255,.72) 59deg,
+    rgba(255,255,255,1) 63deg,          /* hard specular core */
+    rgba(252,246,235,.66) 67deg,        /* falls off warm */
+    rgba(214,202,184,.20) 76deg,
+    rgba(188,204,226,.05) 94deg,
+    transparent 112deg,
+    rgba(226,236,250,.16) 138deg,       /* second, quieter glint */
+    rgba(255,255,255,.34) 146deg,
+    rgba(226,236,250,.16) 154deg,
+    transparent 176deg,
     transparent 360deg);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   mask-composite:exclude;
   animation:lap 12s linear infinite}
 .final__card::after{inset:-1px;border-radius:17px;padding:1px}
-.final__card::before{inset:-5px;border-radius:21px;padding:5px;filter:blur(7px);opacity:.55}
+.final__card::before{inset:-3px;border-radius:19px;padding:3px;filter:blur(4px);opacity:.42}
 @keyframes lap{to{--lap:360deg}}
 @media(prefers-reduced-motion:reduce){
   .final__card::after,.final__card::before{animation:none}
