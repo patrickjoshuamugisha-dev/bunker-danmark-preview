@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080F18'/%3E%3Cpath d='M6 20h20v3H6z' fill='%232F6BFF'/%3E%3Cpath d='M10 20a6 6 0 0 1 12 0z' fill='%239CC0FF'/%3E%3C/svg%3E">
+<link rel="preload" as="image" href="assets/hero.webp" fetchpriority="high">
+<link rel="preload" as="image" href="frames/f000.webp">
 <title>Bunker Danmark · Din egen bunker, under din have</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +27,6 @@
   --soil:#4A3A2E;
   --maxw:1200px;
 }
-@property --sheen{syntax:'<angle>';initial-value:0deg;inherits:false}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--ink);background:var(--depth-2);
@@ -57,7 +59,8 @@ h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
   padding:.9rem 1.7rem;border-radius:9px;transition:background .2s,transform .12s,box-shadow .2s}
 .btn:hover{background:var(--blue-deep);transform:translateY(-1px);box-shadow:0 6px 20px rgba(47,107,255,.3)}
 .btn:active{transform:translateY(0);box-shadow:none}
-.rv{opacity:0;transform:translateY(24px)}
+/* one reveal state for the whole site — short rise, no per-element variation */
+.rv{opacity:0;transform:translateY(14px)}
 @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
 
 /* ---------- NAV: logo left · menu centered · CTA top-right ---------- */
@@ -90,7 +93,7 @@ h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;
   padding-left:clamp(1.5rem,8vw,9rem);padding-right:1.5rem}
 /* whole house visible with a little sky above for the nav; verified framing */
-.hero__bg{position:absolute;inset:0;background:url('assets/hero.png') center 50%/cover no-repeat}
+.hero__bg{position:absolute;inset:0;background:url('assets/hero.webp') center 50%/cover no-repeat}
 /* left scrim protects the copy + bottom dark gradient = backdrop shadow for a clean transition into the dark bunker */
 .hero__scrim{position:absolute;inset:0;
   background:linear-gradient(90deg,rgba(14,21,32,.55) 0%,rgba(14,21,32,.30) 26%,rgba(14,21,32,0) 52%),
@@ -173,15 +176,7 @@ h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
 .final__card{position:relative;z-index:2;max-width:720px;margin:0 auto;text-align:center;
   background:rgba(20,30,42,.55);border:1px solid rgba(242,227,200,.16);border-radius:16px;
   padding:3.2rem clamp(1.5rem,4vw,3.4rem);backdrop-filter:blur(6px)}
-/* a single soft light travelling the outline — the one moving thing on the page, so it pulls the eye */
-.final__card::after{content:"";position:absolute;inset:-1px;border-radius:17px;padding:1.5px;pointer-events:none;
-  background:conic-gradient(from var(--sheen),
-    transparent 0 58%,rgba(242,227,200,.18) 70%,rgba(255,244,222,.95) 78%,rgba(242,227,200,.18) 86%,transparent 96%);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  mask-composite:exclude;animation:sheenSpin 7s linear infinite}
-@keyframes sheenSpin{to{--sheen:360deg}}
-@media(prefers-reduced-motion:reduce){.final__card::after{animation:none;opacity:.5}}
+/* outline treatment parked — three concepts in prototypes/cta-concepts.html await a pick */
 .final__card .eyebrow{color:#e5cfa6;margin-bottom:.7rem}
 /* balance keeps the headline off a one-word orphan line at every width */
 .final__card h2{margin:0 0 .8rem;font-size:clamp(1.75rem,3vw,2.5rem);max-width:20ch;
@@ -365,31 +360,68 @@ document.querySelectorAll('.nav__menu a').forEach(a=>a.addEventListener('click',
 addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false);});
 addEventListener('resize',()=>{if(innerWidth>820)setMenu(false);});
 
-/* calm reveals */
+/* ---- unified reveal ----------------------------------------------------
+   One system for every revealed element on the page. Previously each .rv had
+   its own ScrollTrigger, so a grid of three cards or five FAQ rows fired as
+   three or five separate 0.9s tweens at slightly different scroll points —
+   which read as uneven, twitchy motion on the way down.
+   ScrollTrigger.batch groups everything that crosses the line within the same
+   0.12s window and plays it as ONE staggered move, so a section always arrives
+   as a single calm unit. once:true means nothing ever re-animates on the way
+   back up. Same distance, same duration, same ease everywhere. */
+const REVEAL={dur:.62,ease:'power2.out',y:14,stagger:.075};
 if(!reduce){
-  document.querySelectorAll('.rv').forEach(el=>gsap.to(el,{opacity:1,y:0,duration:.9,ease:'power2.out',
-    scrollTrigger:{trigger:el,start:'top 88%'}}));
+  gsap.set('.rv',{opacity:0,y:REVEAL.y});
+  ScrollTrigger.batch('.rv',{
+    start:'top 92%', once:true, batchMax:8, interval:.12,
+    onEnter:batch=>gsap.to(batch,{opacity:1,y:0,duration:REVEAL.dur,ease:REVEAL.ease,
+      stagger:REVEAL.stagger,overwrite:true})
+  });
 }else document.querySelectorAll('.rv').forEach(el=>{el.style.opacity=1;el.style.transform='none';});
+window.__revealReady=true;
 
 /* ---- scroll-scrub reveal (canvas frame sequence — full frame, copy only after the doors open) ---- */
 const FRAMES=121, pad=n=>String(n).padStart(3,'0');
 const canvas=document.getElementById('revcanvas'), ctx=canvas.getContext('2d');
 const overlay=document.getElementById('revoverlay'), load=document.getElementById('revload');
-const imgs=[]; let loaded=0, cur=-1;
+const imgs=[]; let loaded=0, cur=-1, lastDrawn=0;
 function fit(){const dpr=Math.min(devicePixelRatio||1,2);
   const w=canvas.clientWidth,h=canvas.clientHeight;
   if(!w||!h){requestAnimationFrame(fit);return;}          // layout not ready yet — retry next frame
   canvas.width=w*dpr;canvas.height=h*dpr;draw(Math.max(cur,0),true);}
-function draw(i,force){const img=imgs[i];if(!img||!img.complete)return;if(i===cur&&!force)return;cur=i;
+/* draw the requested frame, or the nearest one already decoded — so the scrub
+   stays watchable while the tail of the sequence is still downloading */
+function nearestReady(i){
+  if(imgs[i]&&imgs[i].complete&&imgs[i].naturalWidth)return i;
+  for(let d=1;d<FRAMES;d++){
+    const a=i-d,b=i+d;
+    if(a>=0&&imgs[a]&&imgs[a].complete&&imgs[a].naturalWidth)return a;
+    if(b<FRAMES&&imgs[b]&&imgs[b].complete&&imgs[b].naturalWidth)return b;
+  }
+  return -1;
+}
+function draw(i,force){const t=nearestReady(i);if(t<0)return;const img=imgs[t];
+  if(t===cur&&!force)return;cur=t;lastDrawn=i;
   const cw=canvas.width,ch=canvas.height;
   const ir=img.width/img.height,cr=cw/ch;let w,h,x,y;      // full-frame cover-fit, no crop
   if(ir>cr){h=ch;w=ch*ir;x=(cw-w)/2;y=0;}else{w=cw;h=cw/ir;x=0;y=(ch-h)/2;}
   ctx.clearRect(0,0,cw,ch);ctx.drawImage(img,x,y,w,h);}
+
+/* the loader used to sit there until all 121 frames were in. Frame 0 is all we
+   need to show something real; the rest stream in behind it. */
+let uncovered=false;
+function uncover(){if(uncovered)return;uncovered=true;
+  fit();load.style.opacity=0;setTimeout(()=>load.remove(),400);}
 for(let i=0;i<FRAMES;i++){const im=new Image();
-  im.onload=()=>{loaded++;if(i===0)fit();if(loaded===FRAMES){load.style.opacity=0;setTimeout(()=>load.remove(),400);}};
-  im.src=`frames/f${pad(i)}.jpg`;imgs.push(im);}
+  im.decoding='async';
+  im.onload=()=>{loaded++;
+    if(i===0)uncover();
+    if(i===lastDrawn||nearestReady(lastDrawn)===i)draw(lastDrawn,true);   // sharpen as the real frame lands
+    if(loaded===FRAMES)ScrollTrigger.refresh();};
+  im.onerror=()=>{loaded++;if(i===0)uncover();};
+  im.src=`frames/f${pad(i)}.webp`;imgs.push(im);}
 addEventListener('resize',fit);
-addEventListener('load',fit);                              // re-fit once full layout is in
+addEventListener('load',()=>{fit();ScrollTrigger.refresh();});  // re-fit + re-measure once layout is final
 ScrollTrigger.create({trigger:'#reveal',start:'top top',end:'bottom bottom',scrub:true,
   onUpdate:self=>{draw(Math.min(FRAMES-1,Math.round(self.progress*(FRAMES-1))));
     overlay.classList.toggle('on',self.progress>0.78);}});
@@ -400,11 +432,14 @@ document.querySelectorAll('[data-form]').forEach(f=>f.addEventListener('submit',
   e.preventDefault();toast.classList.add('on');clearTimeout(t);t=setTimeout(()=>toast.classList.remove('on'),3200);}));
 </script>
 <script>
-/* failsafe: if the animation script died (blocked asset, old browser), never leave content hidden */
+/* Failsafe: if the animation script died (blocked asset, old browser), never leave content hidden.
+   It must only fire when the reveal system genuinely failed — the old version ran unconditionally
+   and stamped inline opacity/transform onto every below-fold .rv, which then fought GSAP and made
+   the lower sections lurch as you scrolled. */
 addEventListener('load',function(){setTimeout(function(){
-  document.querySelectorAll('.rv').forEach(function(el){
-    if(parseFloat(getComputedStyle(el).opacity)<0.05){el.style.opacity=1;el.style.transform='none';}});
-},600);});
+  if(window.__revealReady)return;
+  document.querySelectorAll('.rv').forEach(function(el){el.style.opacity=1;el.style.transform='none';});
+},800);});
 </script>
 </body>
 </html>
