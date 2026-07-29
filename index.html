@@ -27,6 +27,7 @@
   --soil:#4A3A2E;
   --maxw:1200px;
 }
+@property --lap{syntax:'<angle>';initial-value:0deg;inherits:false}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--ink);background:var(--depth-2);
@@ -173,10 +174,39 @@ h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
 .final::before{content:"";position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
   width:min(780px,90vw);height:440px;border-radius:50%;
   background:radial-gradient(closest-side,rgba(242,227,200,.13),transparent 72%)}
+/* faint silver base rim so the border still exists in the unlit stretch —
+   metal in shadow is still metal */
 .final__card{position:relative;z-index:2;max-width:720px;margin:0 auto;text-align:center;
-  background:rgba(20,30,42,.55);border:1px solid rgba(242,227,200,.16);border-radius:16px;
+  background:rgba(20,30,42,.55);border:1px solid rgba(200,212,228,.13);border-radius:16px;
   padding:3.2rem clamp(1.5rem,4vw,3.4rem);backdrop-filter:blur(6px)}
-/* outline treatment parked — three concepts in prototypes/cta-concepts.html await a pick */
+
+/* ---- travelling sheen -------------------------------------------------
+   A single long arc of cool white light walks the outline once every 12s.
+   Roughly a third of the perimeter is lit at any moment, peaked in the middle
+   and feathered out both ways, so it reads as light moving across metal rather
+   than a bright dot doing laps. Two layers: a 1px ring for the highlight itself,
+   and a blurred copy just outside it for the bloom. */
+.final__card::after,.final__card::before{content:"";position:absolute;pointer-events:none;
+  background:conic-gradient(from var(--lap),
+    transparent 0deg,
+    rgba(200,212,228,.10) 26deg,
+    rgba(226,236,248,.52) 52deg,
+    rgba(255,255,255,.92) 63deg,
+    rgba(226,236,248,.52) 74deg,
+    rgba(200,212,228,.10) 100deg,
+    transparent 126deg,
+    transparent 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;
+  animation:lap 12s linear infinite}
+.final__card::after{inset:-1px;border-radius:17px;padding:1px}
+.final__card::before{inset:-5px;border-radius:21px;padding:5px;filter:blur(7px);opacity:.55}
+@keyframes lap{to{--lap:360deg}}
+@media(prefers-reduced-motion:reduce){
+  .final__card::after,.final__card::before{animation:none}
+  .final__card::before{opacity:.3}
+}
 .final__card .eyebrow{color:#e5cfa6;margin-bottom:.7rem}
 /* balance keeps the headline off a one-word orphan line at every width */
 .final__card h2{margin:0 0 .8rem;font-size:clamp(1.75rem,3vw,2.5rem);max-width:20ch;
