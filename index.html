@@ -24,12 +24,19 @@
   --soil:#4A3A2E;
   --maxw:1200px;
 }
+@property --sheen{syntax:'<angle>';initial-value:0deg;inherits:false}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--ink);background:var(--depth-2);
   overflow-x:hidden;-webkit-font-smoothing:antialiased}
 ::selection{background:var(--blue);color:#fff}
-h1,h2,h3{line-height:1.06;letter-spacing:-.02em;font-weight:800}
+/* fixed nav must never cover an anchor target */
+section[id],header[id]{scroll-margin-top:5.5rem}
+/* one consistent keyboard focus ring everywhere */
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{
+  outline:2px solid #9cc0ff;outline-offset:3px;border-radius:6px}
+h1,h2,h3{line-height:1.06;letter-spacing:-.02em;font-weight:800;text-wrap:balance}
+p{text-wrap:pretty}
 h1{font-size:clamp(2.4rem,4.8vw,4rem)}
 h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
 .eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
@@ -43,29 +50,41 @@ h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
 .addr input::placeholder{color:#7d8b98}
 .addr input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,107,255,.25)}
 .addr button{font:inherit;font-size:1rem;font-weight:700;background:var(--blue);color:#fff;border:0;border-radius:9px;
-  padding:.95rem 1.7rem;cursor:pointer;transition:background .2s,transform .2s;white-space:nowrap}
-.addr button:hover{background:var(--blue-deep);transform:translateY(-1px)}
+  padding:.95rem 1.7rem;cursor:pointer;transition:background .2s,transform .12s,box-shadow .2s;white-space:nowrap}
+.addr button:hover{background:var(--blue-deep);transform:translateY(-1px);box-shadow:0 6px 20px rgba(47,107,255,.3)}
+.addr button:active{transform:translateY(0);box-shadow:none}
 .btn{display:inline-block;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;
-  padding:.9rem 1.7rem;border-radius:9px;transition:background .2s,transform .2s}
-.btn:hover{background:var(--blue-deep);transform:translateY(-1px)}
+  padding:.9rem 1.7rem;border-radius:9px;transition:background .2s,transform .12s,box-shadow .2s}
+.btn:hover{background:var(--blue-deep);transform:translateY(-1px);box-shadow:0 6px 20px rgba(47,107,255,.3)}
+.btn:active{transform:translateY(0);box-shadow:none}
 .rv{opacity:0;transform:translateY(24px)}
 @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
 
 /* ---------- NAV: logo left · menu centered · CTA top-right ---------- */
 .nav{position:fixed;inset:0 0 auto 0;z-index:60;display:grid;grid-template-columns:1fr auto 1fr;
-  align-items:center;padding:1.1rem clamp(1.2rem,4vw,2.6rem);transition:background .35s,box-shadow .35s}
+  align-items:center;padding:1.1rem clamp(1.2rem,4vw,2.6rem);
+  transition:background .35s,box-shadow .35s,padding .3s ease}
 .nav__logo{font-weight:800;letter-spacing:.1em;font-size:1rem;color:#fff;text-decoration:none;white-space:nowrap;
   text-shadow:0 1px 10px rgba(0,0,0,.5)}
 .nav__logo span{color:#9cc0ff}
 .nav__menu{display:flex;gap:2rem;justify-self:center;list-style:none}
-.nav__menu a{color:rgba(255,255,255,.94);text-decoration:none;font-size:1.02rem;font-weight:600;transition:color .2s;
-  text-shadow:0 1px 10px rgba(0,0,0,.55)}
+.nav__menu a{position:relative;color:rgba(255,255,255,.94);text-decoration:none;font-size:1.02rem;font-weight:600;
+  transition:color .2s;text-shadow:0 1px 10px rgba(0,0,0,.55)}
+/* underline grows from the centre on hover — same calm motion as the rest */
+.nav__menu a::after{content:"";position:absolute;left:50%;right:50%;bottom:-.35rem;height:2px;background:#9cc0ff;
+  border-radius:2px;transition:left .25s ease,right .25s ease}
 .nav__menu a:hover{color:#fff}
+.nav__menu a:hover::after{left:0;right:0}
 .nav__cta{justify-self:end;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;font-size:1rem;
-  padding:.8rem 1.6rem;border-radius:8px;white-space:nowrap;transition:background .2s,transform .2s;
+  padding:.8rem 1.6rem;border-radius:8px;white-space:nowrap;
+  transition:background .2s,transform .12s,padding .3s ease,font-size .3s ease;
   box-shadow:0 2px 14px rgba(0,0,0,.3)}
 .nav__cta:hover{background:var(--blue-deep);transform:translateY(-1px)}
+.nav__cta:active{transform:translateY(0)}
 .nav--solid{background:rgba(8,15,24,.85);backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(255,255,255,.07)}
+/* scrolled state sits tighter — the bar shouldn't eat the scene below it */
+.nav--solid{padding-top:.6rem;padding-bottom:.6rem}
+.nav--solid .nav__cta{padding:.62rem 1.35rem;font-size:.95rem}
 
 /* ============================================================ HERO (grounded framing, left scrim) */
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;
@@ -112,16 +131,17 @@ h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
   color:var(--paper-soft);font-size:.82rem;letter-spacing:.15em;z-index:5;transition:opacity .4s}
 
 /* ============================================================ HOW IT WORKS (centered header, 3 steps) */
-.how{background:var(--depth);color:var(--paper);padding:6rem 0 6.5rem}
+.how{background:var(--depth);color:var(--paper);padding:6.5rem 0}
 .how__head{text-align:center;max-width:44ch;margin:0 auto 3rem}
 .how__head .eyebrow{color:#8FB4E8;margin-bottom:.9rem}
 .how__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4rem}
-.how__step{padding-top:1.1rem;border-top:2px solid rgba(47,107,255,.5)}
+.how__step{padding-top:1.1rem;border-top:2px solid rgba(47,107,255,.5);transition:border-color .3s}
+.how__step:hover{border-top-color:rgba(47,107,255,1)}
 .how__step h3{font-size:1.12rem;font-weight:700;margin-bottom:.5rem}
 .how__step p{font-size:.94rem;line-height:1.55;color:var(--paper-soft)}
 
 /* ============================================================ OM OS + FAQ (side by side) */
-.duo{background:var(--depth-2);color:var(--paper);padding:5.5rem 0}
+.duo{background:var(--depth-2);color:var(--paper);padding:6.5rem 0 5rem}
 .duo__grid{display:grid;grid-template-columns:0.9fr 1.1fr;gap:clamp(3rem,8vw,7.5rem);align-items:start}
 .about .eyebrow{color:#8FB4E8;margin-bottom:.9rem}
 .about h2{margin:0 0 1.2rem}
@@ -131,8 +151,13 @@ h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
 .faq details{border-top:1px solid rgba(246,250,253,.1);padding:1.15rem 0}
 .faq details:last-of-type{border-bottom:1px solid rgba(246,250,253,.1)}
 .faq summary{cursor:pointer;font-weight:700;font-size:1.02rem;list-style:none;display:flex;
-  justify-content:space-between;gap:1rem;align-items:center}
+  justify-content:space-between;gap:1rem;align-items:center;transition:color .2s}
+.faq summary:hover{color:#cfe0f7}
 .faq summary::-webkit-details-marker{display:none}
+/* answers ease in rather than snapping open */
+.faq details[open] p{animation:faqIn .35s ease both}
+@keyframes faqIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.faq details[open] p{animation:none}}
 /* down-chevron (no top line); rotates 180° to point up on open */
 .faq summary::after{content:"";flex:0 0 auto;width:.62rem;height:.62rem;margin-top:-.18rem;
   border-right:2px solid #8FB4E8;border-bottom:2px solid #8FB4E8;transform:rotate(45deg);
@@ -141,18 +166,29 @@ h2{font-size:clamp(1.8rem,3.3vw,2.7rem)}
 .faq p{margin-top:.85rem;font-size:.94rem;line-height:1.6;color:var(--paper-soft);max-width:60ch}
 
 /* ============================================================ FINAL CTA */
-.final{background:var(--depth-2);color:var(--paper);padding:1.5rem 0 7rem;position:relative;overflow:hidden}
+.final{background:var(--depth-2);color:var(--paper);padding:2rem 0 7rem;position:relative;overflow:hidden}
 .final::before{content:"";position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
   width:min(780px,90vw);height:440px;border-radius:50%;
   background:radial-gradient(closest-side,rgba(242,227,200,.13),transparent 72%)}
-.final__card{position:relative;z-index:2;max-width:680px;margin:0 auto;text-align:center;
+.final__card{position:relative;z-index:2;max-width:720px;margin:0 auto;text-align:center;
   background:rgba(20,30,42,.55);border:1px solid rgba(242,227,200,.16);border-radius:16px;
-  padding:3.2rem clamp(1.3rem,4vw,3.2rem);backdrop-filter:blur(6px)}
+  padding:3.2rem clamp(1.5rem,4vw,3.4rem);backdrop-filter:blur(6px)}
+/* a single soft light travelling the outline — the one moving thing on the page, so it pulls the eye */
+.final__card::after{content:"";position:absolute;inset:-1px;border-radius:17px;padding:1.5px;pointer-events:none;
+  background:conic-gradient(from var(--sheen),
+    transparent 0 58%,rgba(242,227,200,.18) 70%,rgba(255,244,222,.95) 78%,rgba(242,227,200,.18) 86%,transparent 96%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;animation:sheenSpin 7s linear infinite}
+@keyframes sheenSpin{to{--sheen:360deg}}
+@media(prefers-reduced-motion:reduce){.final__card::after{animation:none;opacity:.5}}
 .final__card .eyebrow{color:#e5cfa6;margin-bottom:.7rem}
-.final__card h2{margin:0 0 .8rem}
-.final__card .lead{color:var(--paper-soft)}
+/* balance keeps the headline off a one-word orphan line at every width */
+.final__card h2{margin:0 0 .8rem;font-size:clamp(1.75rem,3vw,2.5rem);max-width:20ch;
+  margin-inline:auto;text-wrap:balance}
+.final__card .lead{color:var(--paper-soft);max-width:46ch;margin-inline:auto}
 .final__card .addr{margin-top:1.9rem;justify-content:center}
-.final__card .fine{margin-top:.75rem;font-size:.8rem;color:#7C8B98}
+.final__card .fine{margin-top:.75rem;font-size:.8rem;color:#8B9AA8}
 footer{background:var(--depth-2);color:#5E6E7C;padding:2rem 0 2.6rem;font-size:.82rem;
   border-top:1px solid rgba(246,250,253,.07)}
 footer .wrap{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
@@ -161,12 +197,37 @@ footer .wrap{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
   transition:opacity .3s,transform .3s;z-index:99;box-shadow:0 8px 30px rgba(0,0,0,.4)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 
+/* burger: hidden on desktop, the only way to reach the menu on phones */
+.nav__burger{display:none;justify-self:end;width:2.6rem;height:2.6rem;border:0;border-radius:8px;cursor:pointer;
+  background:rgba(255,255,255,.08);position:relative}
+.nav__burger span,.nav__burger::before,.nav__burger::after{content:"";position:absolute;left:50%;width:1.1rem;
+  height:2px;background:#fff;border-radius:2px;transform:translateX(-50%);transition:transform .3s,opacity .2s}
+.nav__burger span{top:calc(50% - 1px)}
+.nav__burger::before{top:calc(50% - 7px)}
+.nav__burger::after{top:calc(50% + 5px)}
+.nav--open .nav__burger span{opacity:0}
+.nav--open .nav__burger::before{transform:translateX(-50%) translateY(6px) rotate(45deg)}
+.nav--open .nav__burger::after{transform:translateX(-50%) translateY(-6px) rotate(-45deg)}
+
 @media(max-width:820px){
-  .nav{grid-template-columns:1fr auto}.nav__menu{display:none}
+  .nav{grid-template-columns:1fr auto auto;gap:.6rem}
+  .nav__burger{display:block}
+  .nav__cta{padding:.7rem 1.1rem;font-size:.92rem}
+  .nav--solid .nav__cta{padding:.6rem 1rem;font-size:.9rem}
+  .nav__menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;
+    background:rgba(8,15,24,.97);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.08);
+    padding:.4rem clamp(1.2rem,4vw,2.6rem) 1rem;
+    opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s,transform .25s,visibility .25s}
+  .nav--open .nav__menu{opacity:1;visibility:visible;transform:none}
+  .nav__menu li{border-bottom:1px solid rgba(255,255,255,.07)}
+  .nav__menu li:last-child{border-bottom:0}
+  .nav__menu a{display:block;padding:.95rem 0;font-size:1rem}
+  .nav__menu a::after{display:none}
   .how__grid{grid-template-columns:1fr;gap:1.6rem;max-width:460px;margin:0 auto}
   .duo__grid{grid-template-columns:1fr;gap:2.8rem}
   .about p{max-width:none}
   .reveal{height:300vh}
+  .final__card{padding:2.4rem 1.5rem}
 }
 </style>
 <noscript><style>.rv{opacity:1;transform:none}</style></noscript>
@@ -175,13 +236,14 @@ footer .wrap{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 
 <nav class="nav" id="nav">
   <a class="nav__logo" href="#top">BUNKER<span> DANMARK</span></a>
-  <ul class="nav__menu">
+  <ul class="nav__menu" id="navmenu">
     <li><a href="#top">Hjem</a></li>
     <li><a href="#reveal">Bunkeren</a></li>
     <li><a href="#virker">Sådan virker det</a></li>
     <li><a href="#om">Om os</a></li>
   </ul>
   <a class="nav__cta" href="#tjek">Tjek din grund</a>
+  <button class="nav__burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="navmenu"><span></span></button>
 </nav>
 
 <!-- HERO -->
@@ -290,9 +352,18 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 gsap.registerPlugin(ScrollTrigger);
 
 /* nav solidifies after hero (stays solid over the bunker + all lower sections) */
+const nav=document.getElementById('nav');
 new IntersectionObserver(([e])=>{
-  document.getElementById('nav').classList.toggle('nav--solid', e.intersectionRatio < 0.15);
+  nav.classList.toggle('nav--solid', e.intersectionRatio < 0.15);
 },{threshold:[0,.15,.6]}).observe(document.querySelector('.hero'));
+
+/* mobile menu — below 820px the links live behind the burger */
+const burger=document.getElementById('burger');
+const setMenu=open=>{nav.classList.toggle('nav--open',open);burger.setAttribute('aria-expanded',String(open));};
+burger.addEventListener('click',()=>setMenu(!nav.classList.contains('nav--open')));
+document.querySelectorAll('.nav__menu a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false);});
+addEventListener('resize',()=>{if(innerWidth>820)setMenu(false);});
 
 /* calm reveals */
 if(!reduce){
